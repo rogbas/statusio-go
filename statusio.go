@@ -35,7 +35,7 @@ import (
 )
 
 const (
-	BaseUrlV2 = "https://api.status.io/v2/"
+	BaseUrlV2 = "https://api.statuspage.io/v1/"
 
 	STATE_INVESTIGATING = 100
 	STATE_IDENTIFIED    = 200
@@ -73,7 +73,10 @@ func (a StatusioApi) apiRequest(method string, resource string, data interface{}
 
 	req.Header.Set("x-api-id", a.ApiId)
 	req.Header.Set("x-api-key", a.ApiKey)
+	req.Header.Set("Authorization", fmt.Sprintf("OAuth %s", a.ApiKey))
 	req.Header.Set("Content-Type", "application/json")
+
+	fmt.Printf("Req: %#v", req)
 
 	if err != nil {
 		return err
@@ -82,7 +85,9 @@ func (a StatusioApi) apiRequest(method string, resource string, data interface{}
 	resp, err := a.HttpClient.Do(req)
 	if err != nil {
 		return err
+		fmt.Printf("Resp err: %#v", resp)
 	}
+	fmt.Printf("Resp: %#v", resp)
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
